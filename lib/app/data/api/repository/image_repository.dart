@@ -1,4 +1,4 @@
-import 'package:swiggy_clone/app/data/api/model/breaking_bad_model.dart';
+import 'package:swiggy_clone/app/data/api/model/images_model.dart';
 import 'package:swiggy_clone/app/data/api/provider/image_api_provider.dart';
 
 class ImageRepository {
@@ -6,7 +6,7 @@ class ImageRepository {
 
   ImageRepository({required this.imageApiProvider});
 
-  Future<List<BreakingBadModel>> getAll() async {
-    return imageApiProvider.fetchAllCharacters();
+  Future<List<ImagesModel>?> getAll() async {
+    return imageApiProvider.fetchAllImages();
   }
 }

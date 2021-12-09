@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:swiggy_clone/app/data/api/model/food_categories_model.dart';
+import 'package:swiggy_clone/app/data/api/model/images_model.dart';
 import 'package:swiggy_clone/app/shared/constants/colors.dart';
 import 'package:swiggy_clone/app/ui/landing/landing_controller.dart';
 import 'package:swiggy_clone/app/ui/widgets/bottom_bordered_container.dart';
@@ -12,27 +13,56 @@ class HomeTab extends GetView<LandingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: fixedTopAppBar(),
+        elevation: 0.0,
+        backgroundColor: Colors.white,
+      ),
+      resizeToAvoidBottomInset: false,
       body: Obx(
         () => RefreshIndicator(
           onRefresh: () => controller.loadFoodCategories(),
           child: BottomBorderedContainer(
-            child: Container(
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 8),
-              child: Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    fixedTopAppBar(),
-                    foodCategories(),
-                    instaMartCard(),
-                    Expanded(flex: 1, child: Text(""))
-                  ],
-                ),
-              ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: (foodData != null && imagesData != null)
+                  ? ListView(
+                      children: [
+                        foodCategories(),
+                        instaMartCard(),
+                        topPicksForYou(),
+                        restaurants(),
+                      ],
+                    )
+                  : Center(child: CircularProgressIndicator()),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget topPicksForYou() {
+    return SizedBox(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Image.asset(
+              'assets/images/like.png',
+              width: 30,
+              height: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+              child: Text(
+                "Top Picks for You",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20.0),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -43,7 +73,7 @@ class HomeTab extends GetView<LandingController> {
       height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: data!.length,
+        itemCount: foodData!.length,
         itemBuilder: (context, position) {
           return Card(
             child: Container(
@@ -55,13 +85,79 @@ class HomeTab extends GetView<LandingController> {
                   Container(
                     height: 100,
                     child: Image(
-                      image: NetworkImage(data![position].strCategoryThumb),
+                      image: NetworkImage(foodData![position].strCategoryThumb),
                     ),
                   ),
-                  Text(data![position].strCategory,
+                  Text(foodData![position].strCategory,
                       style: TextStyle(
                           fontSize: 16, fontFamily: 'PromixaNovaMedium'),
                       textAlign: TextAlign.start)
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget restaurants() {
+    return SizedBox(
+      height: 250,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: foodData!.length,
+        itemBuilder: (context, position) {
+          return Card(
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 130,
+                    child: Image(
+                      image: NetworkImage(imagesData![position].downloadUrl),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(imagesData![position].author,
+                        style: TextStyle(
+                            fontSize: 16, fontFamily: 'PromixaNovaMedium'),
+                        textAlign: TextAlign.left),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(4.0, 12.0, 0, 0),
+                            child: Image.asset(
+                              'assets/images/star.png',
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text("4.4  Ratings\t\t 28 mins"),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Free Delivery",
+                            style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                fontSize: 16,
+                                fontFamily: 'PromixaNovaMedium'),
+                            textAlign: TextAlign.left),
+                      )
+                    ],
+                  )
                 ],
               ),
             ),
@@ -117,12 +213,16 @@ class HomeTab extends GetView<LandingController> {
                   'assets/images/ic_offers_icon.png',
                   width: 30,
                   height: 30,
+                  color: Colors.black,
                 ),
                 SizedBox(width: 4),
                 Text(
                   "Offers",
                   style: TextStyle(
-                      fontSize: 18, letterSpacing: 0.3, fontFamily: 'NeueBold'),
+                      fontSize: 18,
+                      letterSpacing: 0.3,
+                      fontFamily: 'NeueBold',
+                      color: Colors.black),
                 ),
               ],
             ),
@@ -137,18 +237,24 @@ class HomeTab extends GetView<LandingController> {
       child: Text(
         "Street No. 4, Vedant Nagar, Moga",
         style: TextStyle(
-            letterSpacing: 0.3, fontSize: 14, fontFamily: 'PromixaRegular'),
+            letterSpacing: 0.3,
+            fontSize: 14,
+            fontFamily: 'PromixaRegular',
+            color: Colors.black),
       ),
     );
   }
 
   Widget destinationName() {
     return Row(children: [
-      Icon(CupertinoIcons.location),
+      Icon(
+        CupertinoIcons.location,
+        color: Colors.black,
+      ),
       WrapTextWithPadding(
         child: Text(
           "Hitesh's Home",
-          style: TextStyle(fontSize: 22),
+          style: TextStyle(fontSize: 22, color: Colors.black),
         ),
       ),
     ]);
@@ -253,7 +359,11 @@ class HomeTab extends GetView<LandingController> {
     );
   }
 
-  List<Category>? get data {
+  List<Category>? get foodData {
     return controller.foodCategories.value?.categories;
+  }
+
+  List<ImagesModel>? get imagesData {
+    return controller.images.value;
   }
 }

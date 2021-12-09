@@ -6,7 +6,7 @@ import 'package:swiggy_clone/app/ui/landing/landing_controller.dart';
 class LandingBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<LandingController>(
-        () => LandingController(foodRepository: Get.find()));
+    Get.lazyPut<LandingController>(() => LandingController(
+        foodRepository: Get.find(), imagesRepository: Get.find()));
   }
 }

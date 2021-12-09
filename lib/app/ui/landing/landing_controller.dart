@@ -1,8 +1,9 @@
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:swiggy_clone/app/data/api/model/breaking_bad_model.dart';
 import 'package:swiggy_clone/app/data/api/model/food_categories_model.dart';
+import 'package:swiggy_clone/app/data/api/model/images_model.dart';
 import 'package:swiggy_clone/app/data/api/repository/food_repository.dart';
+import 'package:swiggy_clone/app/data/api/repository/image_repository.dart';
 import 'package:swiggy_clone/app/ui/landing/tabs/account_tab.dart';
 import 'package:swiggy_clone/app/ui/landing/tabs/food_tab.dart';
 import 'package:swiggy_clone/app/ui/landing/tabs/home_tab.dart';
@@ -18,13 +19,14 @@ class LandingController extends GetxController {
   //   tabIndex = index;
   //   update();
   // }
-  // final ImageRepository apiRepository;
+  final ImageRepository imagesRepository;
   final FoodRepository foodRepository;
 
-  LandingController({required this.foodRepository});
+  LandingController(
+      {required this.foodRepository, required this.imagesRepository});
 
   var currentTab = MainTabs.home.obs;
-  var images = Rxn<List<BreakingBadModel>>();
+  var images = Rxn<List<ImagesModel>?>();
   var foodCategories = Rxn<FoodCategoriesModel>();
 
   late HomeTab homeTab;
@@ -40,21 +42,18 @@ class LandingController extends GetxController {
     homeTab = HomeTab();
     // loadImages();
     loadFoodCategories();
+    loadImages();
     foodTab = FoodTab();
     instaMartTab = InstaMartTab();
     searchTab = SearchTab();
     accountTab = AccountTab();
   }
 
-  // Future<void> loadImages() async {
-  //   var _users = await apiRepository.getAll();
-  //   if (_users.length != 0) {
-  //     images.value = _users;
-  //     images.refresh();
-  //   } else {
-  //     Fluttertoast().printError();
-  //   }
-  // }
+  Future<void> loadImages() async {
+    var _images = await imagesRepository.getAll();
+    images.value = _images;
+    images.refresh();
+  }
 
   Future<void> loadFoodCategories() async {
     var _users = await foodRepository.getFoodCategories();

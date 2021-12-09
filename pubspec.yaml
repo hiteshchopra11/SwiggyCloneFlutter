@@ -56,6 +56,8 @@ flutter:
   assets:
     - assets/images/ic_offers_icon.png
     - assets/images/food.png
+    - assets/images/like.png
+    - assets/images/star.png
   fonts:
     - family: PromixaLight
       fonts:
